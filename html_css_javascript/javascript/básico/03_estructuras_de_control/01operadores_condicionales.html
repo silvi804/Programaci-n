@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      //<!-- operadores -->
+      //aritméticos + - * / modulo % (residuo)
+
+      /*Relacionales
+        < , > , >=, <=, ==, === , !=, !=== */
+      console.log(4 == 4);
+      console.log(4 == "4");
+      console.log(0 == false);
+
+      console.log(4 === 4);
+      console.log(4 === "4");
+      console.log(0 === false); // mejor práctica
+      /*
+        = 1 igual es asignación de variable
+        == 2 iguales es comparación de valores
+        === 3 iguales es comparación de tipo de dato y de valor
+        */
+
+      /*Incremento y decremento
+          i+= , i-= , i*= , i/=
+
+          operador unario: ++, --
+
+      */
+
+      var i = 2;
+      console.log(i++); //primero imprime luego opera
+      console.log(++i); //primero opera luego imprime, no es la más adecuada
+
+      /* Lógicos
+          ! : Not
+          || : Or
+          && : And
+
+          */
+
+      console.log(!true);
+      console.log(9 === 9 || "9" === 9); //una se dene cumplir
+      console.log(9 === 9 && "9" === 9); // todas se deben cumplir
+
+      //<!-- condicionales -->
+      // if, else if, else
+
+      let hora = 14;
+
+      if (hora >= 0 && hora <= 6) {
+        console.log("No joda");
+      } else if (hora > 6 && hora <= 11) {
+        console.log("Buenos días");
+      } else if (11 < hora < 18) {
+        console.log("Buenos tardes");
+      } else {
+        console.log("Buenas noches");
+      }
+
+      // operaador ternario
+      edad = 15;
+
+      let eresMayor = edad >= 18 ? "Eres mayor de edad" : "Eres menor de edad";
+      console.log(eresMayor);
+
+      //switch case
+      dia = 2;
+
+      switch (dia) {
+        case 0:
+          console.log("Domingo");
+          break;
+        case 1:
+          console.log("Lunes");
+          break;
+        case 2:
+          console.log("Martes");
+          break;
+        case 3:
+          console.log("Miércoles");
+          break;
+        case 4:
+          console.log("Jueves");
+          break;
+        case 5:
+          console.log("Viernes");
+          break;
+        case 6:
+          console.log("Sábado");
+          break;
+        default:
+          console.log("El día no existe");
+          break;
+      }
+    </script>
+  </body>
+</html>
