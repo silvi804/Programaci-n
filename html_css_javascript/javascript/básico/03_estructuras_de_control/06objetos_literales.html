@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let nombre = "KeNaI",
+        edad = 7;
+
+      const perro = {
+        nombre: nombre,
+        edad: edad,
+        ladrar: function () {
+          console.log("guauu guauu");
+          raza: "Callejero";
+        },
+      };
+      console.log(perro);
+      perro.ladrar();
+
+      // aolicacion de objetos literales
+      const dog = {
+        nombre,
+        edad, //atributos
+        ladrar() {
+          console.log("A caray que util"); // métodos
+        },
+      };
+
+      console.log(dog);
+      dog.ladrar();
+    </script>
+  </body>
+</html>

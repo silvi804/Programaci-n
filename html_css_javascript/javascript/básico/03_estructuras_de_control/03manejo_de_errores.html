@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      try {
+        sumama;
+        console.log("En el try se agrega el código a evaluar");
+      } catch (error) {
+        console.log(
+          "Catch, captura cualquier error surgido o lanzado en el try"
+        );
+        console.log(error);
+      } finally {
+        console.log("El finally se ejecuta haya error o no");
+      }
+
+      try {
+        let numero = "y";
+
+        if (isNaN(numero)) {
+          throw new Error(" El caracter introducido no es un Número"); // permite personalizar el output del error
+        }
+
+        console.log(numero ** 2);
+      } catch (error) {
+        console.log(`Se produjo el siguiente error: ${error}`);
+      }
+    </script>
+  </body>
+</html>

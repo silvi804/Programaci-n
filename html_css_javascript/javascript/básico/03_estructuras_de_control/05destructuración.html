@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const numeros = [1, 2, 3];
+
+      // sin destructuración
+      let uno = numeros[0],
+        dos = numeros[1],
+        tres = numeros[2];
+
+      console.log(uno, dos, tres);
+
+      // con destructuración
+
+      const [one, two] = numeros; //en cuadrado porque es arreglo
+      console.log(one, two); //se asignan en orden
+
+      console.log(numeros); //no deja de existir el arreglo original
+      let persona = {
+        nombre: "Jon",
+        apellido: "Mircha",
+        edad: 35,
+      };
+
+      let { nombre, edad, apellido } = persona; // puede estar en distinto orden
+      console.log(nombre, apellido, edad); // en los objetos la variable se debe llamar igual
+    </script>
+  </body>
+</html>
