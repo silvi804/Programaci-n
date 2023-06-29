@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- prototipos -->
+    <script>
+
+        const animal = {
+            nombre: "Snoopy",
+            sonar() {
+                console.log("Hago sonidos porque estoy vivo")
+            }
+        }
+
+        const animal2 = {
+            nombre: "Lola Bunny",
+            sonar() {
+                console.log("Hago sonidos porque estoy vivo")
+            }
+        }
+        console.log(animal)
+        console.log(animal2)
+
+        // el copia y pega no es funcional
+        // como se crea un prototipo para generar n cantidad de animales
+
+        // Función constructora
+
+        function Animal(nombre, genero) {
+            //Atrubutos dentro
+            this.nombre = nombre;
+            this.genero = genero;
+        } // ciere función
+
+        // metodos se asignan al prototipo no a la función
+        Animal.prototype.sonar = function () {
+            console.log("Hago sonidos porque estoy vivo");
+        };
+
+        Animal.prototype.saludar = function () {
+            console.log(`Hola mi nombre es ${this.nombre}`);
+        };
+
+        const snoopy = new Animal("Snoopy", "Macho"),
+            lolaBunny = new Animal("LolaBunny", "Hembra")
+
+        console.log(snoopy)
+        console.log(lolaBunny)
+
+        snoopy.saludar()
+        lolaBunny.saludar()
+
+        snoopy.sonar();
+        lolaBunny.sonar();
+
+        // se evita dar copy paste a la estructura del objeto literal
+
+    </script>
+    <!-- Herencia prototípica -->
+    <script>
+        function Perro(nombre, genero, tamanio) {
+            this.super = Animal;
+            this.super(nombre, genero);
+            this.tamanio = tamanio;
+        }
+
+        // Perro está heredando de Animal
+        Perro.prototype = new Animal();
+        Perro.prototype.constructor = Perro;
+        // sobreescritura métodos del prototipo padre en el hijo
+
+        Perro.prototype.sonar = function () {
+            console.log("Soy un perro y mi sonido es un ladrido");
+        }
+
+        Perro.prototype.ladrar = function () {
+            console.log("wuauf")
+        }
+
+        //comprobaciones
+        const snoopy2 = new Perro("Snoopy", "Macho", "Mediano")
+        console.log(snoopy2)
+        snoopy2.sonar() // sobreescrito
+        snoopy2.saludar() // hereda los métodos de animal
+        snoopy2.ladrar() // nueva
+    </script>
+</body>
+
+</html>

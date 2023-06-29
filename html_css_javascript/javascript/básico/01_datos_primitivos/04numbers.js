@@ -10,7 +10,9 @@ console.log(
 
 console.log(typeof c, typeof d);
 console.log(c + d);
+
 console.log(c + parseInt(d)); // depende del constuctor Number, por eso no viene de la forma d.__
 
+console.log(parseInt("11", 2));
 // Javascript no tiente tantos tipos de datos numéricos
 // Es mejor trabajar con librerías para evitar errores numéricos

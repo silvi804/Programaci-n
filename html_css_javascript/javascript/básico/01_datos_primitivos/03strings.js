@@ -1,3 +1,19 @@
+// para usar carateres especiales
+const sampleStr = 'Alan said, "Peter is learning JavaScript".';
+// string escape sequences
+/*
+
+ \'	single quote
+\"	double quote
+\\	backslash
+\n	newline
+\t	tab
+\r	carriage return
+\b	backspace
+\f	form feed
+
+ */
+
 // construcor, poco utilizado
 let wenas = new String("Un objeto String");
 let nombre = "Consuela";

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        const saludar = () => {
+            console.log("hola");
+        };
+        saludar();
+
+        const despedir = () => console.log("adios"); // si es solo una línea
+        despedir();
+
+        // para recibir parámetros
+        const quHora = (hora) => console.log(`Son las ${hora}`); // return implícito
+
+        quHora("12");
+
+        //const queHora = hora => console.log(`Son las ${hora}`); se puede así 
+        //queHora("14");
+
+        const numeros = [1, 2, 3, 4, 5]
+
+        numeros.forEach((el, index) => console.log(`${el} está en la posición ${index}`));
+
+        // las arrow functions tienen la capacidad de captar el contexto del objeto donde se encuentran
+
+        // cuidado al declarar metodos dentro de objetos literales
+    </script>
+</body>
+
+</html>
