@@ -1,10 +1,10 @@
 // Ambito global
-var hola = "Hola Mundo"
+var hola = "Hola Mundo";
 // objeto window, scope global en navegadores
-console.log(window.hola)
+console.log(window.hola);
 // Ambito de bloque
-let hello = "Hello World"
-console.log(window.hello)
+let hello = "Hello World";
+console.log(window.hello);
 
 // Ejemplo
 // Usando siempre var
@@ -12,8 +12,8 @@ console.log("****************var*****************");
 var musica = "Rock";
 console.log("Variable Música antes del Bloque", musica);
 {
-    var musica = "Pop";
-    console.log("Variable Música dentro del Bloque", musica);
+  var musica = "Pop";
+  console.log("Variable Música dentro del Bloque", musica);
 }
 console.log("Variable Música después del Bloque", musica);
 
@@ -23,7 +23,18 @@ console.log("****************let*****************");
 let musica2 = "Rock";
 console.log("Variable Música antes del Bloque", musica2);
 {
-    let musica2 = "Pop";
-    console.log("Variable Música dentro del Bloque", musica2);
+  let musica2 = "Pop";
+  console.log("Variable Música dentro del Bloque", musica2);
 }
 console.log("Variable Música después del Bloque", musica2);
+
+// para comprobar el scope que produce let
+function checkScope() {
+  let i = "function scope";
+  if (true) {
+    let i = "block scope";
+    console.log("Block scope i is: ", i);
+  }
+  console.log("Function scope i is: ", i);
+  return i;
+}

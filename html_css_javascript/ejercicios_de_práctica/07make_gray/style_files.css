@@ -1,0 +1,33 @@
+canvas{
+    height:100pt ;
+    border:1px solid lightgray
+  }
+  
+  input{
+    font-size:15pt
+  }
+  
+  div{
+    font-size:15pt
+  }canvas{
+    width:200pt;
+    height:100pt ;
+    margin: 10px;
+    border:1px solid lightgray
+  }
+  
+  input{
+    font-size:15pt
+  }
+  
+  div{
+    font-size:15pt
+  }
+  
+  .blueback{
+    background-color: #a7dda2; 
+  }
+/*   
+  .blueback{
+    background-color: #a7dda2; 
+  } */

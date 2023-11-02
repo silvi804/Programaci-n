@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // las clases son azucar sintáctica
+
+        class Animal { // las clases no reciben parámetros
+            constructor(nombre, genero) {
+                this.nombre = nombre;
+                this.genero = genero;
+            } // aquí ocurre la asignación de las propiedades
+            // ciere función
+
+            // Métodos, el formato de clase permite ponerlos dentro sin desperdiciar memoria
+            sonar() {
+                console.log("Hago sonidos porque estoy vivo");
+            };
+
+            saludar() {
+                console.log(`Hola mi nombre es ${this.nombre}`);
+            };
+        }
+
+        const mimi = new Animal("mimi", "hembra"), scooby = new Animal("scooby", "macho");
+        console.log(mimi)
+        console.log(scooby)
+        mimi.sonar();
+        mimi.saludar();
+    </script>
+    <script>
+
+        class Perro extends Animal {
+            constructor(nombre, genero, tamanio) {
+                // con el método super() se manda a llamar al constructor de la clase padre
+                super(nombre, genero);
+                this.tamanio = tamanio;
+                this.raza = null
+            }
+
+            sonar() {
+                console.log("Soy un perro y mi sonido es un ladrido"); //sobreescritura
+
+            }
+            ladrar() {
+                console.log("Guaaau wuuuuaaauufff");
+            }
+
+            // un método estático se puede ejecutar sin necesidad de instanciar la clase
+
+            static queEres() {
+                console.log("un lindo cachorrito")
+            }
+
+            // los setters y getters son metodos que permiten establecer y obtener vallores de atributos de nuestra clase
+            get getRaza() {
+                return this.raza;
+            }
+
+            set setRaza(raza) {
+                this.raza = raza
+            }
+
+        }
+
+        const scooby2 = new Perro("Scooby", "Macho", "grandesito");
+        console.log(scooby2)
+        scooby2.sonar(); //sobreescrito
+        scooby2.ladrar(); //creado
+        scooby2.saludar(); //herencia
+
+        Perro.queEres();  // se puede llamar sin necesidad de crear un objeto del objeto del tipo de mi clase
+
+        // son métodos pero se utilizan commo atributos
+        console.log(scooby2.getRaza)
+
+        scooby2.setRaza = "Gran Danés"
+        console.log(scooby2.getRaza)
+
+    </script>
+</body>
+
+</html>

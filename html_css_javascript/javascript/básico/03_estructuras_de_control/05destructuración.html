@@ -1,35 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <script>
-      const numeros = [1, 2, 3];
 
-      // sin destructuración
-      let uno = numeros[0],
-        dos = numeros[1],
-        tres = numeros[2];
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      console.log(uno, dos, tres);
+<body>
+  <script>
+    const numeros = [1, 2, 3];
 
-      // con destructuración
+    // sin destructuración
+    let uno = numeros[0],
+      dos = numeros[1],
+      tres = numeros[2];
 
-      const [one, two] = numeros; //en cuadrado porque es arreglo
-      console.log(one, two); //se asignan en orden
+    console.log(uno, dos, tres);
 
-      console.log(numeros); //no deja de existir el arreglo original
-      let persona = {
-        nombre: "Jon",
-        apellido: "Mircha",
-        edad: 35,
-      };
+    // con destructuración
 
-      let { nombre, edad, apellido } = persona; // puede estar en distinto orden
-      console.log(nombre, apellido, edad); // en los objetos la variable se debe llamar igual
-    </script>
-  </body>
+    const [one, two] = numeros; //en cuadrado porque es arreglo
+    console.log(one, two); //se asignan en orden
+
+    console.log(numeros); //no deja de existir el arreglo original
+    let persona = {
+      nombre: "Jon",
+      apellido: "Mircha",
+      edad: 35,
+    };
+
+    let { nombre, edad, apellido } = persona; // puede estar en distinto orden
+    console.log(nombre, apellido, edad); // en los objetos la variable se debe llamar igual
+
+    //otro ejemplo
+
+    const HIGH_TEMPERATURES = {
+      yesterday: 75,
+      today: 77,
+      tomorrow: 80
+    };
+    const { today: highToday, tomorrow: highTomorrow } = HIGH_TEMPERATURES;
+
+    //otro ejemplo
+    const LOCAL_FORECAST = {
+      yesterday: { low: 61, high: 75 },
+      today: { low: 64, high: 77 },
+      tomorrow: { low: 68, high: 80 }
+    };
+
+
+    const { today: { low: lowToday, high: highToday2 } } = LOCAL_FORECAST
+
+    // otra forma de destructurar
+    const [a, b, , , c] = [1, 2, 3, 4, 5, 6];
+    console.log(a, b, c);
+
+    // usando rest prototype
+    const [e, f, ...arr] = [1, 2, 3, 4, 5, 7];
+    console.log(a, b);
+    console.log(arr);
+  </script>
+</body>
+
 </html>

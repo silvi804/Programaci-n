@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="estilo_toDo.css">
+    <script src="script_toDo.js"></script>
+</head>
+
+<body>
+    <h1 id="myHeader">TO DO List</h1>
+    <input type="button" value="Add" id="addButton" onclick="addTask()">
+    <input type="text" id="input" placeholder="enter task...">
+    <hr>
+
+    <ul id="tasks">
+
+        <li>
+
+            <input type="button" class="done" onclick="markDone(this.parentNode)" value="&#x2713;" />
+
+            <input type="button" class="remove" onclick="remove(this.parentNode)" value="&#x2715;" />
+
+            make todo list
+
+        </li>
+
+    </ul>
+
+    <hr>
+
+    <div id="divabout">
+
+    </div>
+    <input type="button" value="About" onclick="doAbout()">
+    <input type="button" value="Clear" onclick="clearAbout()">
+
+</body>
+
+</html>

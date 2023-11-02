@@ -1,41 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <script>
-      // Un objeto es una colección de llave valor
-      const b = {
-        nombre: "Silvana",
-        apellido: "Suárez",
-        edad: 35,
-        pasatiempos: ["dibujar", "bailar", "series"],
-        soltero: false,
-        contacto: {
-          email: "nose",
-          nomas: "tampoco se",
-        },
-        saludar: function () {
-          console.log("Wenas");
-        },
-        decirNombre: function () {
-          console.log(`Hola me llamo ${this.nombre} ${this.apellido}`); //usar una propiedad dentro del objeto en que me encuentro
-        },
-      };
 
-      console.log(b);
-      console.log(b["nombre"]);
-      console.log(b.apellido); // es común acceder a través de los atributos al valor
-      console.log(b.contacto.email);
-      b.saludar(); // las funcioines solo se invocan
-      b.decirNombre();
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      console.log(Object.keys(b));
-      console.log(Object.values(b));
-      console.log(b.hasOwnProperty("nombre"));
-    </script>
-  </body>
+<body>
+  <script>
+    // Un objeto es una colección de llave valor
+    const b = {
+      nombre: "Silvana",
+      apellido: "Suárez",
+      edad: 35,
+      pasatiempos: ["dibujar", "bailar", "series"],
+      soltero: false,
+      contacto: {
+        email: "nose",
+        nomas: "tampoco se",
+      },
+      saludar: function () {
+        console.log("Wenas");
+      },
+      decirNombre: function () {
+        console.log(`Hola me llamo ${this.nombre} ${this.apellido}`); //usar una propiedad dentro del objeto en que me encuentro
+      },
+    };
+
+    console.log(b);
+    console.log(b["nombre"]);
+    console.log(b.apellido); // es común acceder a través de los atributos al valor
+    console.log(b.contacto.email);
+    b.saludar(); // las funcioines solo se invocan
+    b.decirNombre();
+
+    console.log(Object.keys(b));
+    console.log(Object.values(b));
+    console.log(b.hasOwnProperty("nombre"));
+
+
+
+    // to prevent object mutation
+    Object.freeze(b);
+  </script>
+</body>
+
 </html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // console
+        console.log(console)
+        console.error("esto es un error")
+        console.warn("Esto es un aviso")
+        console.info("Esto es un mensaje informativo")
+
+        let nombre = "Silvana", apellido = "suarez", edad = 17
+
+        console.log(nombre, apellido, edad)
+        console.log(`Hola mi nombre es ${nombre} ${apellido} y tengo ${edad} años`)
+        console.log(`Hola mi nombre es %s  %s y tengo %d años`, nombre, apellido, edad)
+
+
+        // window
+        console.log(window)
+
+        // document: representación del documento html a tavés de javascript
+        console.log(document)
+        console.dir(document) // para representar un elemento como objeto
+
+        // groups
+        console.group("curso de @nose")
+        console.log("curso de javascript")
+        console.log("node js")
+        console.log("algo otro")
+        console.log("lo tercero")
+        console.groupEnd();
+
+        console.groupCollapsed("curso de @nose")
+        console.log("curso de javascript")
+        console.log("node js")
+        console.log("algo otro")
+        console.log("lo tercero")
+        console.groupEnd();
+
+        //table
+        console.table(Object.entries(console).sort()) //todos los demás
+
+        const numeros = [1, 2, 3, 4, 5], vocales = ["a", "e", "i", "o", "u"];
+
+        console.table() // se puede hacer con objetos
+
+        console.clear()
+
+        console.time(`Cuanto tiempo tarda mi código`) // string es una etiqueta
+        const arreglo = Array(10000)
+
+        console.timeEnd(`Cuanto tiempo tarda mi código`)// se cierra con la misma 
+
+        console.count("codigo for")
+        console.log("holi")
+
+        let x = 3, y = 2, pruebaXY = "se espera que x siempre sea menor que Y";
+
+        console.assert(x < y, { x, y, pruebaXY }) // condición, variables en juego
+
+    </script>
+</body>
+
+
+</html>

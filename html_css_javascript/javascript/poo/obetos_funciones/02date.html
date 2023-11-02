@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        console.log(Date())
+
+        let fecha = new Date()
+        let dia = fecha.getDate() //día del mes
+        let diaSemaa = fecha.getDay();
+        // D L M M J V S => 0 1 2 3 4 5 6
+        let mes = fecha.getMonth();
+        // ene = 0
+        let año = fecha.getFullYear();
+        //2023
+        let hora = fecha.getHours();
+        let minuto = fecha.getMinutes();
+        let segundo = fecha.getSeconds();
+        let milisegundo = fecha.getMilliseconds();
+
+        console.log(fecha.toString())
+
+        console.log(fecha.toDateString())
+        console.log(fecha.toLocaleString())// sin decir la zona horaria
+
+        console.log(fecha.toLocaleDateString())
+        console.log(fecha.toLocaleTimeString())
+
+        console.log(fecha.getTimezoneOffset())
+
+        // si se busca otro lugar
+
+        console.log(fecha.getUTCDate())
+        console.log(fecha.getUTCHours())
+        console.log(Date.now()) // segundos pasados desde 1970, formato timestamp
+        let cumpleSilvi = new Date(2006, 0, 13)
+        console.log(cumpleSilvi)
+
+    </script>
+</body>
+
+</html>
