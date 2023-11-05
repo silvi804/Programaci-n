@@ -166,7 +166,7 @@ class Inventario:
         self.fecha = ttk.Entry(self.frm1)
         self.fecha.configure(width=10)
         self.fecha.place(anchor="nw", x=0.45*ancho, y=col3)
-        self.fecha.bind("<Key>", self.validaFecha)
+        self.fecha.bind("<KeyRelease>", self.validaFecha)
 
         # Separador
         self.separador2 = ttk.Separator(self.frm1)
@@ -325,9 +325,26 @@ class Inventario:
 
     def validaFecha(self, event):
         ''' Valida la fecha'''
-        if event.char:
-            self.backslash(indice=1)
+        if event:
+            try:
+                val = int(self.fecha.get()[(len(self.fecha.get())-1)])
+            except ValueError:
+                if self.fecha.get()[(len(self.fecha.get())-1)] == "/":
+                    pass
+                else:
+                    mssg.showerror(
+                        'Atención!!', '..Solo números en la fecha...')
+                    self.fecha.delete((len(self.fecha.get())-1), 'end')
+            finally:
+                if len(self.fecha.get()) == 2 or len(self.fecha.get()) == 5:
+                    self.backslash(len(self.fecha.get()))
 
+                elif len(self.fecha.get()) > 10:
+                    mssg.showerror(
+                        'Atención!!', '.. Un año no tiene más de 4 dígitos..')
+                    self.fecha.delete(10, 'end')
+
+                # contemplar backspace
     # Rutina de limpieza de datos
 
     def limpiaCampos(self):
