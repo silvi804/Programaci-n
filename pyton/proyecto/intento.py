@@ -346,13 +346,10 @@ class Inventario:
                     self.fecha.delete(10, 'end')
 
     def borraFecha(self, event):
-        ''' Borra los backslash al borrar un número'''
+        ''' Si se borra la fecha elimina el backslash junto con el número anterior'''
         if event.char:
             if self.fecha.get()[(len(self.fecha.get())-1)] == "/":
                 self.fecha.delete((len(self.fecha.get())-1), 'end')
-
-        # elf.idNit.bind("<BackSpace>", lambda _: self.idNit.delete(
-        #     len(self.idNit.get())), 'end')
 
     # Rutina de limpieza de datos
 
@@ -374,10 +371,13 @@ class Inventario:
     # Deshabilita campos
     # self....config(state='disabled')
 
-    # Rutina para cargar los datos en el árbol
-    """ En esta funcion deben ser condiciones las validaciones """
+    # Boton cancelar
+    # Aún no se que tan necesario es
+    def borrar_datos(self):
+        # if event:
+        self.limpiaCampos()
 
-    # Boton grabar
+    # Rutina para cargar los datos en el árbol
     def guardar_datos(self):
         '''Guarda registros en la base de datos'''
         # try except IntegrityError: UNIQUE constraint failed: Productos.idNit, Productos.Codigo
@@ -388,17 +388,11 @@ class Inventario:
                     VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
         self.limpiaCampos()
 
+    # Boton grabar
     def adiciona_Registro(self, event=None):
         '''Adiciona un producto a la BD si la validación es True'''
 
         pass
-
-    # Boton cancelar
-    def borrar_datos(self):
-        # if event:
-        self.limpiaCampos()
-
-    """ Set('') """
 
     # Boton buscar
     # try except donde no hay coincidencias
@@ -417,6 +411,14 @@ class Inventario:
         for row in db_rows:
             self.treeProductos.insert('', 0, text=row[0], values=[
                                       row[1], row[2], row[3], row[4], row[5], row[6]])
+
+    def editaTreeProveedores(self, event=None):
+        ''' Edita una tupla del TreeView'''
+        pass
+
+    def eliminaRegistro(self, event=None):
+        '''Elimina un Registro en la BD'''
+        pass
 
     # Ni idea que hace
     def carga_Datos(self):
@@ -440,14 +442,6 @@ class Inventario:
     #     self.cantidad.insert(0, row[7])
     #     self.precio.insert(0, row[8])
     #     self.fecha.insert(0, row[9])
-
-    def editaTreeProveedores(self, event=None):
-        ''' Edita una tupla del TreeView'''
-        pass
-
-    def eliminaRegistro(self, event=None):
-        '''Elimina un Registro en la BD'''
-        pass
 
 
 if __name__ == "__main__":
