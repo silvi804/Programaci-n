@@ -75,8 +75,6 @@ class Inventario:
         self.idNit.configure(takefocus=True)
         self.idNit.place(anchor="nw", x=0.05*ancho, y=col1)
         self.idNit.bind("<KeyRelease>", self.validaIdNit)
-
-        """ No se que hace """
         self.idNit.bind("<BackSpace>", lambda _: self.idNit.delete(
             len(self.idNit.get())), 'end')
 
@@ -167,6 +165,7 @@ class Inventario:
         self.fecha.configure(width=10)
         self.fecha.place(anchor="nw", x=0.45*ancho, y=col3)
         self.fecha.bind("<KeyRelease>", self.validaFecha)
+        self.fecha.bind("<BackSpace>", self.borraFecha)
 
         # Separador
         self.separador2 = ttk.Separator(self.frm1)
@@ -254,10 +253,10 @@ class Inventario:
         """ Cuando se digite el dato que el espacio vuelva a quedar vacío """
         # Botón para Guardar los datos
         self.btnGrabar = ttk.Button(self.frm2)
-        self.btnGrabar.configure(text='Grabar', command=self.guardar_datos)
+        self.btnGrabar.configure(text='Grabar', command=self.adiciona_Registro)
         self.btnGrabar.place(anchor="nw", width=bwidth,
                              x=int(ancho*0.25)+bwidth, y=col1_2)
-        # self.btnGrabar.bind('<Button-1>', self.guardar_datos)
+        # self.btnGrabar.bind('<Button-1>', self.adiciona_Registro)
 
         # Botón para Editar los datos
         self.btnEditar = ttk.Button(self.frm2)
@@ -335,6 +334,8 @@ class Inventario:
                     mssg.showerror(
                         'Atención!!', '..Solo números en la fecha...')
                     self.fecha.delete((len(self.fecha.get())-1), 'end')
+            # except IndexError:
+            #     pass
             finally:
                 if len(self.fecha.get()) == 2 or len(self.fecha.get()) == 5:
                     self.backslash(len(self.fecha.get()))
@@ -344,7 +345,15 @@ class Inventario:
                         'Atención!!', '.. Un año no tiene más de 4 dígitos..')
                     self.fecha.delete(10, 'end')
 
-                # contemplar backspace
+    def borraFecha(self, event):
+        ''' Borra los backslash al borrar un número'''
+        if event.char:
+            if self.fecha.get()[(len(self.fecha.get())-1)] == "/":
+                self.fecha.delete((len(self.fecha.get())-1), 'end')
+
+        # elf.idNit.bind("<BackSpace>", lambda _: self.idNit.delete(
+        #     len(self.idNit.get())), 'end')
+
     # Rutina de limpieza de datos
 
     def limpiaCampos(self):
@@ -370,6 +379,7 @@ class Inventario:
 
     # Boton grabar
     def guardar_datos(self):
+        '''Guarda registros en la base de datos'''
         # try except IntegrityError: UNIQUE constraint failed: Productos.idNit, Productos.Codigo
         # if event:
         self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
@@ -377,6 +387,11 @@ class Inventario:
         self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
                     VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
         self.limpiaCampos()
+
+    def adiciona_Registro(self, event=None):
+        '''Adiciona un producto a la BD si la validación es True'''
+
+        pass
 
     # Boton cancelar
     def borrar_datos(self):
@@ -425,10 +440,6 @@ class Inventario:
     #     self.cantidad.insert(0, row[7])
     #     self.precio.insert(0, row[8])
     #     self.fecha.insert(0, row[9])
-
-    def adiciona_Registro(self, event=None):
-        '''Adiciona un producto a la BD si la validación es True'''
-        pass
 
     def editaTreeProveedores(self, event=None):
         ''' Edita una tupla del TreeView'''
