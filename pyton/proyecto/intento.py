@@ -31,6 +31,7 @@ class Inventario:
             idNitProv VARCHAR(15) NOT NULL ,
             Razon_Social VARCHAR(100),
             Ciudad VARCHAR(20),
+            PRIMARY KEY(idNitProv),
             FOREIGN KEY(idNitProv) REFERENCES Productos(idNit)
             );""")
 
@@ -187,7 +188,7 @@ class Inventario:
 
         # Árbol para mosrtar los datos de la B.D.
         self.treeProductos = ttk.Treeview(self.frm1, style="estilo.Treeview")
-        self.treeProductos.configure(selectmode="extended")
+        self.treeProductos.configure(selectmode="browse")
         self.treeProductos.place(
             anchor="nw", height=int(alto*0.6), width=int(ancho*0.94), x=int(ancho*0.01), y=int(col1*5.5))
 
@@ -226,14 +227,13 @@ class Inventario:
         self.treeProductos.heading(
             "Fecha",       anchor="center", text='Fecha')
 
-        # Carga los datos en treeProductos
-        # self.lee_treeProductos()
-
         # Scrollbar en el eje Y de treeProductos
         """  self.scrollbary = ttk.Scrollbar(
             self.treeProductos, orient='vertical', command=self.treeProductos.yview)
         self.treeProductos.configure(yscroll=self.scrollbary.set)
         self.scrollbary.place(x=778, y=25, height=478) """
+
+        self.treeProductos.bind('<<TreeviewSelect>>', self.tree_seleccion)
 
         # Título de la pestaña Ingreso de Datos
         self.frm1.pack(side="top")
@@ -377,25 +377,20 @@ class Inventario:
         # if event:
         self.limpiaCampos()
 
-    # Rutina para cargar los datos en el árbol
-    def guardar_datos(self):
-        '''Guarda registros en la base de datos'''
-        # try except IntegrityError: UNIQUE constraint failed: Productos.idNit, Productos.Codigo
-        # if event:
-        self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
-                    VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
-        self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
-                    VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
-        self.limpiaCampos()
+    def validaCampos(self, evento=''):
+        if self.idNit.get() == '':
+            mssg.showerror(
+                'Atención!!', f'.. idNit no puede estar vacío si desea {evento}..')
+        elif self.codigo.get() == '':
+            mssg.showerror(
+                'Atención!!', f'.. Código no puede estar vacío si desea {evento}..')
+        elif self.fecha.get() == '':
+            mssg.showerror(
+                'Atención!!', f'.. la fecha no puede estar vacío si desea {evento}..')
+        else:
+            return True
 
-    # Boton grabar
-    def adiciona_Registro(self, event=None):
-        '''Adiciona un producto a la BD si la validación es True'''
-
-        pass
-
-    # Boton buscar
-    # try except donde no hay coincidencias
+     # Rutina para cargar los datos en el árbol
     def lee_treeProductos(self):
         ''' Carga los datos y Limpia la Tabla tablaTreeView '''
         tabla_TreeView = self.treeProductos.get_children()
@@ -404,13 +399,78 @@ class Inventario:
             self.treeProductos.delete(linea)  # Límpia la filas del TreeView
 
         # Seleccionando los datos de la BD
-        query = f"""SELECT * from Productos pd WHERE pd.idNit= '{(self.idNit.get())}' ;"""
+        query = f"""SELECT * from Productos pd WHERE pd.idNit= '{(self.idNit.get())}' ORDER BY idNit ;"""
         db_rows = self.run_Query(query)  # db_rows contine la vista del query
 
         # # Insertando los datos de la BD en treeProductos de la pantalla
         for row in db_rows:
             self.treeProductos.insert('', 0, text=row[0], values=[
                                       row[1], row[2], row[3], row[4], row[5], row[6]])
+
+    # Seleccionar de treeview
+    def tree_seleccion(self, event):
+        if event:
+            item_seleccionado = self.treeProductos.focus()
+            fila = self.treeProductos.item(item_seleccionado)
+            val = fila.get('values')
+            # pv.Razon_Social,pv.Ciudad
+            valProv = self.run_Query(
+                f"""SELECT * FROM Productos pd INNER JOIN Proveedor pv WHERE pd.idNit='{fila.get('text')}' AND pd.Codigo='{val[0]}';""")
+            for row in valProv:
+                self.limpiaCampos()
+                self.idNit.insert(0, row[0])
+                self.codigo.insert(0, row[1])
+                self.descripcion.insert(0, row[2])
+                self.unidad.insert(0, row[3])
+                self.cantidad.insert(0, row[4])
+                self.precio.insert(0, row[5])
+                self.fecha.insert(0, row[6])
+                self.razonSocial.insert(0, row[8])
+                self.ciudad.insert(0, row[9])
+
+    # Rutina para cargar los datos en la base de datos
+    def guardar_datos(self, evento=''):
+        '''Guarda registros en la base de datos'''
+        if self.idNit.get() != '' and self.codigo.get() != '' and self.fecha.get() != '':
+            self.run_Query(""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
+                        VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
+            self.run_Query(""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
+                        VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
+            self.limpiaCampos()
+        else:
+            self.validaCampos(f'{evento}')
+
+    # def actualiza_datos(self):
+    #     #contemplar que todo sea igual
+    #     print("holi")
+    # self.run_Query("""UPDATE """)
+    #     self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
+    #                     VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
+    #     self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
+    #                 VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
+    # Boton grabar
+
+    def adiciona_Registro(self):
+        '''Adiciona un producto a la BD si la validación es True'''
+        try:
+            self.guardar_datos('Grabar')
+
+        except sqlite3.IntegrityError:
+            # toca mejorarlo para que no tenga en cuenta proovedor
+            respuesta = mssg.askquestion(
+                'Atención!!', 'Este registro ya existe,¿desea sobreescribirlo?', icon='info')
+            if respuesta == 'yes':
+                print('holi')
+            elif respuesta == 'no':
+                print('alo')
+
+        # except IntegrityError:
+
+    # Boton buscar
+    # try except donde no hay coincidencias
+
+    def actualiza_Productos(self):
+        '''Actualiza un registro en la base de datos '''
 
     def editaTreeProveedores(self, event=None):
         ''' Edita una tupla del TreeView'''
