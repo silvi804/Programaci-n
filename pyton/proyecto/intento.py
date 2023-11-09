@@ -260,7 +260,7 @@ class Inventario:
 
         # Botón para Editar los datos
         self.btnEditar = ttk.Button(self.frm2)
-        self.btnEditar.configure(text='Editar')
+        self.btnEditar.configure(text='Editar', command = self.actualiza_datos)
         self.btnEditar.place(anchor="nw", width=bwidth,
                              x=int(ancho*0.26)+2*bwidth, y=col1_2)
 
@@ -427,8 +427,9 @@ class Inventario:
                 self.fecha.insert(0, row[6])
                 self.razonSocial.insert(0, row[8])
                 self.ciudad.insert(0, row[9])
-
-    # Rutina para cargar los datos en la base de datos
+ 
+    
+    # Rutina para cargar los datos en la base de datosactualiza_dato
     def guardar_datos(self, evento=''):
         '''Guarda registros en la base de datos'''
         if self.idNit.get() != '' and self.codigo.get() != '' and self.fecha.get() != '':
@@ -440,29 +441,46 @@ class Inventario:
         else:
             self.validaCampos(f'{evento}')
 
-    # def actualiza_datos(self):
-    #     #contemplar que todo sea igual
-    #     print("holi")
-    # self.run_Query("""UPDATE """)
-    #     self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
-    #                     VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
-    #     self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
-    #                 VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
+    def actualiza_datos(self):
+        #contemplar que todo sea igual
+        print("holi")
+        self.run_Query(f"""UPDATE Productos 
+                       SET Descripcion= ?, Und= ?, Cantidad = ?, Precio = ?, Fecha = ? 
+                       WHERE idNit = ? AND Codigo=? """,(self.descripcion.get(),self.unidad.get(),self.cantidad.get(),self.precio.get(),self.fecha.get(),self.idNit.get(), self.codigo.get()))
+        # self.run_Query(f"""UPDATE Proveedor SET idNitProv = ?,Razon_Social = ?, Ciudad = ? """, (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
+        
+        # self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
+        #                 VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
+        # self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
+        #             VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
     # Boton grabar
 
     def adiciona_Registro(self):
         '''Adiciona un producto a la BD si la validación es True'''
-        try:
-            self.guardar_datos('Grabar')
+        sameId = self.run_Query(f"""SELECT * from Productos pd WHERE pd.idNit= ?;""",(self.idNit.get()))
+        for row in sameId:
+            if row[1] == self.codigo.get():
+                print(row[1])
+                rep = True
+                break
+                # respuesta = mssg.askquestion(
+                # 'Atención!!', 'Este registro ya existe,¿desea sobreescribirlo?', icon='info')
+                # if respuesta == 'yes':
+                #     print('holi')
+                # elif respuesta == 'no':
+                #     print('alo')
+            else: rep = False
+            
+        if rep == False:
+            try:
+                self.guardar_datos('Grabar')
+            except sqlite3.IntegrityError:
+                self.limpiaCampos()
 
-        except sqlite3.IntegrityError:
+            
+                
             # toca mejorarlo para que no tenga en cuenta proovedor
-            respuesta = mssg.askquestion(
-                'Atención!!', 'Este registro ya existe,¿desea sobreescribirlo?', icon='info')
-            if respuesta == 'yes':
-                print('holi')
-            elif respuesta == 'no':
-                print('alo')
+            
 
         # except IntegrityError:
 
