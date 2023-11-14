@@ -382,18 +382,16 @@ class Inventario:
         # # Insertando los datos de la BD en treeProductos de la pantalla
         for row in db_rows:
             self.treeProductos.insert('', 0, text=row[0], values=[
-                                      row[4], row[5], row[6], row[7], row[8], row[9]])
+                                      str(row[4]), row[5], row[6], row[7], row[8], row[9]])
     # Grabar
     def guardar_proveedor(self):
         # try except IntegrityError: UNIQUE constraint failed: Productos.idNit, Productos.Codigo
         self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
                     VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
-        self.limpiaCampos()
         
     def guardar_productos(self):
         self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
                     VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
-        self.limpiaCampos()
 
     def actualiza_productos(self):
         #contemplar que todo sea igual
@@ -413,47 +411,75 @@ class Inventario:
                 mssg.showerror('Atención!!', f'El producto debe corresponder con un proveedor si desea grabar')
             else:
                 mssg.showerror('Atención!!', f'Id/Nit y código deben contener información si desea grabar')
+                
         else:
-            sameIdProv = (self.run_Query(f"""SELECT * from Proveedor WHERE idNitProv= ?;""",(self.idNit.get(),))).fetchall()
-            print(sameIdProv)
-            if sameIdProv:
-                print('si hay')
-                self.actualiza_proveedor()
-                self.mensaje = 'actualizado'
+            self.sameIdProv = (self.run_Query(f"""SELECT * from Proveedor WHERE idNitProv= ?;""",(self.idNit.get(),))).fetchall() 
+            self.mensaje = ''
+            self.accion = ''
+            # print(self.sameIdProv[1],self.sameIdProv[2])
+            if self.sameIdProv:    
+                if self.razonSocial.get() == self.sameIdProv[0][1] and self.ciudad.get() == self.sameIdProv[0][2]:
+                    pass  
+                else:
+                    self.accion = 'actualizar'
+                    self.mensaje = 'El provedor ha sido actualizado'
             else: 
-                print('pues no')
-                self.guardar_proveedor()
-                self.mensaje = 'guardado'
-            
+                self.accion = 'guardar'
+                self.mensaje = 'El provedor ha sido guardado'
+        
             if self.codigo.get() == '':
-                mssg.showinfo(title='Grabación exitosa', message=f'El proveedor ha sido {self.mensaje}', icon='info')    
+                if self.mensaje:
+                    if self.accion == 'actualizar':
+                        self.actualiza_proveedor()
+                    elif self.accion == 'guardar':
+                        self.guardar_proveedor()
+                        
+                    mssg.showinfo(title='Grabación exitosa', message=f' {self.mensaje}', icon='info')
+                else:   
+                    mssg.showinfo(title='Grabación no requerida', message=f'Los datos de provedor han sido previamente grabados', icon='info')  
                 self.limpiaCampos()
-            else:  
-                #ahora comprueba si la fecha está vacía             
+            else:             
                 if self.fecha.get() == '':
                     mssg.showerror( 'Atención!!', f'.. la fecha no puede estar vacía si desea grabar')
                 else:
-                    sameId = (self.run_Query(f"""SELECT * from Productos WHERE idNit= ? AND Codigo= ?;""",(self.idNit.get(),self.codigo.get()))).fetchall()
-                    print(sameId)
-                    if sameId:
-                        self.actualiza_productos()
-                        mssg.showinfo(title='Grabación exitosa', message=f'El producto ha sido actualizado y el proveedor ha sido {self.mensaje}', icon='info')
-                        
+                    if self.accion == 'actualizar':
+                        self.actualiza_proveedor()
+                    elif self.accion == 'guardar':
+                        self.guardar_proveedor()
+                    self.sameId = (self.run_Query(f"""SELECT * from Productos WHERE idNit= ? AND Codigo= ?;""",(self.idNit.get(),self.codigo.get()))).fetchall()
+                    print(self.sameId)
+                    if self.sameId:
+                        if self.descripcion.get() == self.sameId[0][2] and self.unidad.get() == self.sameId[0][3] and self.cantidad.get() == self.sameId[0][4] and self.precio.get()== self.sameId[0][5] and self.fecha.get()==self.sameId[0][6]:
+                            if self.mensaje:
+                                mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nLos datos del producto han sido previamente grabados', icon='info')
+                            else:
+                                mssg.showinfo(title='Grabación no requerida', message=f'Los datos ingresados han sido previamente grabados', icon='info')
+                        else:
+                            self.actualiza_productos()
+                            if self.mensaje:
+                                mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nEl producto ha sido actualizado', icon='info')
+                            else:
+                                mssg.showinfo(title='Grabación exitosa', message=f'El producto ha sido actualizado', icon='info')
+                        self.limpiaCampos()
                     else:
                         self.guardar_productos()
-                        mssg.showinfo(title='Grabación exitosa', message=f'El producto ha sido grabado y el proveedor ha sido {self.mensaje}', icon='info')
-            
+                        if self.mensaje:
+                            mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nEl producto se ha guardado ', icon='info')
+                        else:
+                            mssg.showinfo(title='Grabación exitosa', message=f'El producto se ha guardado ', icon='info')
+
+                        self.limpiaCampos()
 
     #Editar
     def tree_seleccion(self, event=None):
         item_seleccionado = self.treeProductos.focus()
         fila = self.treeProductos.item(item_seleccionado)
         val = fila.get('values')
+        print(fila)
         # pv.Razon_Social,pv.Ciudad
         valProv = self.run_Query(
             f"""SELECT * FROM Proveedor pv INNER JOIN Productos pd ON pv.idNitProv= pd.idNit WHERE pv.idNitProv = ? AND pd.Codigo= ?;""",(fila.get('text'),val[0]))
         for row in valProv:
-            print(row)
             self.limpiaCampos()
             self.idNit.insert(0, row[0])
             self.razonSocial.insert(0, row[1])
