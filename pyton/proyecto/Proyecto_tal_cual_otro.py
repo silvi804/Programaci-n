@@ -8,6 +8,9 @@ from os import path, system, name
 """ Módulo os: Proporciona funciones para interactuar con el sistema operativo."""
 
 class Inventario:
+    #Creación del constructor, inicializar la clase inventario, self hace referencia a la instancia actual de la clase
+    #def es que se está creando/definiendo una función
+    #self es la instancia de la clase dentro de sus métodos
     def __init__(self, master=None):
         """ No olvidar lo de actualiza """
         self.mpath = r'X:/Users/ferna/Documents/UNal/Alumnos/2023_S2/ProyInventario'
@@ -19,11 +22,13 @@ class Inventario:
         mpath, filename = path.split(absFilePath)
         self.win.iconbitmap(mpath+r'/f2.ico')
         self.db_name = mpath+r'/Inventario.db'
-            
+        
+        #Este método se utiliza para especificar si la ventana puede ser redimensionada en el ancho y en el alto. Los dos argumentos que recibe son booleanos que indican si se permite la redimensión en cada dirección.
+        #ancho y alto
         self.win.resizable(True, True)
 
         # creación base de datos
-        self.run_Query("""CREATE TABLE IF NOT EXISTS 'Productos'(
+        self.run_query("""CREATE TABLE IF NOT EXISTS 'Productos'(
             idNit VARCHAR(15),
             Codigo VARCHAR(10),
             Descripcion VARCHAR(100),
@@ -34,7 +39,7 @@ class Inventario:
             PRIMARY KEY(idNit,Codigo),
             FOREIGN KEY(idNit) REFERENCES Proveedor(idNitProv)
             );""")
-        self.run_Query("""CREATE TABLE IF NOT EXISTS 'Proveedor' (
+        self.run_query("""CREATE TABLE IF NOT EXISTS 'Proveedor' (
             idNitProv VARCHAR(15) NOT NULL ,
             Razon_Social VARCHAR(100),
             Ciudad VARCHAR(20)
@@ -80,7 +85,10 @@ class Inventario:
         self.idNit = ttk.Entry(self.frm1)
         self.idNit.configure(takefocus=True)
         self.idNit.place(anchor="nw", x=0.05*ancho, y=col1)
-        self.idNit.bind("<KeyRelease>", self.validaIdNit)
+        self.idNit.bind("<KeyRelease>", self.valida_idNit)
+        
+        self.idNit.focus_set()
+        self.idNit.icursor(tk.END)
 
         """ No se que hace """
         self.idNit.bind("<BackSpace>", lambda _: self.idNit.delete(
@@ -151,7 +159,7 @@ class Inventario:
         self.cantidad = ttk.Entry(self.frm1)
         self.cantidad.configure(width=12)
         self.cantidad.place(anchor="nw", x=0.08*ancho, y=col3)
-        self.cantidad.bind("<KeyRelease>",self.validaCantidad)
+        self.cantidad.bind("<KeyRelease>",self.valida_cantidad)
 
         # Etiqueta precio del Producto
         self.lblPrecio = ttk.Label(self.frm1)
@@ -162,7 +170,7 @@ class Inventario:
         self.precio = ttk.Entry(self.frm1)
         self.precio.configure(width=15)
         self.precio.place(anchor="nw", x=0.26*ancho, y=col3)
-        self.precio.bind("<KeyRelease>",self.validaPrecio)
+        self.precio.bind("<KeyRelease>",self.valida_precio)
 
         # Etiqueta fecha de compra del Producto
         self.lblFecha = ttk.Label(self.frm1)
@@ -174,8 +182,8 @@ class Inventario:
         self.fecha = ttk.Entry(self.frm1)
         self.fecha.configure(width=10)
         self.fecha.place(anchor="nw", x=0.45*ancho, y=col3)
-        self.fecha.bind("<KeyRelease>", self.entradaFecha)
-        self.fecha.bind("<BackSpace>", self.borraFecha)
+        self.fecha.bind("<KeyRelease>", self.entrada_fecha)
+        self.fecha.bind("<BackSpace>", self.borra_fecha)
 
         # Separador
         self.separador2 = ttk.Separator(self.frm1)
@@ -210,7 +218,7 @@ class Inventario:
         self.treeProductos.column(
             "Codigo",      anchor="w", stretch=True, width=int(ancho*0.035))
         self.treeProductos.column(
-            "Descripcion", anchor="w", stretch=True, width=int(ancho*0.35))
+            "Descripcion", anchor="w", stretch=True, width=int(ancho*0.28))
         self.treeProductos.column(
             "Und",         anchor="w", stretch=True, width=int(ancho*0.035))
         self.treeProductos.column(
@@ -236,14 +244,11 @@ class Inventario:
         self.treeProductos.heading(
             "Fecha",       anchor="center", text='Fecha')
 
-        # Carga los datos en treeProductos
-        # self.lee_treeProductos()
-
         # Scrollbar en el eje Y de treeProductos
-        """  self.scrollbary = ttk.Scrollbar(
+        self.scrollbary = ttk.Scrollbar(
             self.treeProductos, orient='vertical', command=self.treeProductos.yview)
         self.treeProductos.configure(yscroll=self.scrollbary.set)
-        self.scrollbary.place(x=778, y=25, height=478) """
+        self.scrollbary.place(x=820, y=25, height=478)
         
         self.treeProductos.bind('<Double-1>', self.tree_seleccion)
 
@@ -258,7 +263,7 @@ class Inventario:
 
         # Botón para Buscar un Proveedor
         self.btnBuscar = ttk.Button(self.frm2)
-        self.btnBuscar.configure(text='Buscar', command=self.lee_treeProductos)
+        self.btnBuscar.configure(text='Buscar', command=self.buscar_prov)
         self.btnBuscar.place(anchor="nw", width=bwidth,
                              x=int(ancho*0.24), y=col1_2)
 
@@ -278,7 +283,7 @@ class Inventario:
 
         # Botón para Elimnar datos
         self.btnEliminar = ttk.Button(self.frm2)
-        self.btnEliminar.configure(text='Eliminar', command = self.eliminaRegistro)
+        self.btnEliminar.configure(text='Eliminar', command = self.elimina_registro)
         self.btnEliminar.place(anchor="nw", width=bwidth,
                                x=int(ancho*0.27)+3*bwidth, y=col1_2)
         
@@ -286,7 +291,7 @@ class Inventario:
         # Botón para cancelar una operación
         self.btnCancelar = ttk.Button(self.frm2)
         self.btnCancelar.configure(
-            text='Cancelar', width=int(bwidth*0.12), command=self.limpiaCampos)  # , command=self.limpiaCampos
+            text='Cancelar', width=int(bwidth*0.12), command=self.limpia_campos)  
         self.btnCancelar.place(anchor="nw", width=bwidth,
                                x=int(ancho*0.28)+4*bwidth, y=col1_2)
         # self.btnGrabar.bind('<Button>', self.borrar_datos)
@@ -305,13 +310,18 @@ class Inventario:
     # Rutina de centrado de pantalla
 
     def centra(self, win, ancho, alto):
-        """ centra las ventanas en la pantalla """
+        """ Centra la ventana de tkinter
+        Args:
+            win (tkinter.Tk): La ventana donde se encuentran los frames
+            ancho (int): Ancho de la ventana
+            alto (int): Alto de la ventana
+        """
         x = win.winfo_screenwidth() // 2 - ancho // 2
         y = 0# win.winfo_screenheight() // 2 - alto // 2
         win.geometry(f'{ancho}x{alto}+{x}+{y}')
         win.deiconify()  # Se usa para restaurar la ventana
     # Operaciones con la base de datos
-    def run_Query(self, query, parametros=()):
+    def run_query(self, query, parametros=()):
         ''' Función para ejecutar los Querys a la base de datos '''
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
@@ -322,16 +332,23 @@ class Inventario:
     '''..............Validaciones del sistema..................'''
 
     # Id/Nit
-    def validaIdNit(self, event):
-        ''' Valida que la longitud no sea mayor a 15 caracteres'''
+    def valida_idNit(self, event):
+        """ Valida que la longitud de Id/Nit no sea mayor a 15 caracteres 
+        Args:
+            event (tkinter.Event): El evento que recibe el entry"""
         if event.char:
             if len(self.idNit.get()) > 15:
                 mssg.showerror('Atención!!', '.. ¡Máximo 15 caracteres! ..')
                 self.idNit.delete(15, 'end')
-        # Tener en cuenta caso de copypast """
     
-    #Unidad
-    def validaCantidad(self,event):
+    #Cantidad
+    def valida_cantidad(self, event):
+        """ Permite únicamente la entrada de dígitos a la cantidad
+         Args:
+            event (tkinter.Event): El evento que recibe el entry """
+        if event.keysym == 'Tab':
+            # No hacer nada si la tecla presionada es Tab
+            return
         try:
             valC = float(self.cantidad.get())
         except ValueError:
@@ -340,10 +357,16 @@ class Inventario:
                 if char.isdigit() or char == '.':
                     pass
                 else:
-                    self.cantidad.delete(index,'end')            
-                
+                    self.cantidad.delete(index,'end')      
+    
     #Precio
-    def validaPrecio(self,event):
+    def valida_precio(self,event):
+        """ Permite únicamente la entrada de dígitos al precio 
+        Args:
+            event (tkinter.Event): El evento que recibe el entry """
+        if event.keysym == 'Tab':
+            # No hacer nada si la tecla presionada es Tab
+            return
         try:
             valP = float(self.precio.get())
         except ValueError:
@@ -358,60 +381,46 @@ class Inventario:
     def backslash(self, indice):
         self.fecha.insert(indice, "/")
     
-    def entradaFecha(self, event):
-        ''' Valida la fecha'''
+    def entrada_fecha(self, event):
+        ''' Le da formato dd/mm/aaaa a la fecha
+        Args:
+            event (tkinter.Event): El evento que recibe el entry '''
         for index, char in enumerate(self.fecha.get()):
-                if char.isdigit():
-                    if len(self.fecha.get()) == 2 or len(self.fecha.get()) == 5:
-                        self.backslash(len(self.fecha.get()))
-                    elif len(self.fecha.get()) > 10:
-                        mssg.showerror(
-                            'Atención!!', '.. Un año no tiene más de 4 dígitos..')
-                        self.fecha.delete(10, 'end')
-                elif char == '/':
-                    if index== 2 or index== 5:
-                        pass
-                    else:
-                        mssg.showerror("Atención!!","El símbolo '/' solo debe ingresarlo el programa")
-                        self.fecha.delete(index,'end')
-                else:
+            if index==2 and char != '/' or index == 5 and char != '/' :
+                self.fecha.delete(index, 'end')
+            elif char.isdigit():
+                if len(self.fecha.get()) == 2 or len(self.fecha.get()) == 5:
+                    self.backslash(len(self.fecha.get()))
+                elif len(self.fecha.get()) > 10:
                     mssg.showerror(
-                    'Atención!!', '..Solo números en la fecha...')
-                    self.fecha.delete(index, 'end')
+                        'Atención!!', '.. Un año no tiene más de 4 dígitos..')
+                    self.fecha.delete(10, 'end')
+            elif char == '/':
+                if index== 2 or index== 5:
+                    pass
+                else:
+                    mssg.showerror("Atención!!","El símbolo '/' solo debe ingresarlo el programa")
+                    self.fecha.delete(index,'end')
+            else:
+                mssg.showerror(
+                'Atención!!', '..Solo números en la fecha...')
+                self.fecha.delete(index, 'end')
              
-                    
-  
-                    
-    # def entradaFecha(self, event):
-    #     ''' Valida la fecha'''
-    #     if event:
-    #         try:
-    #             val = int(self.fecha.get()[(len(self.fecha.get())-1)])
-    #         except ValueError:
-    #             if self.fecha.get()[(len(self.fecha.get())-1)] == "/":
-    #                 pass
-    #             else:
-    #                 mssg.showerror(
-    #                     'Atención!!', '..Solo números en la fecha...')
-    #                 self.fecha.delete((len(self.fecha.get())-1), 'end')
-    #         # except IndexError:
-    #         #     pass
-    #         finally:
-    #             if len(self.fecha.get()) == 2 or len(self.fecha.get()) == 5:
-    #                 self.backslash(len(self.fecha.get()))
 
-    #             elif len(self.fecha.get()) > 10:
-    #                 mssg.showerror(
-    #                     'Atención!!', '.. Un año no tiene más de 4 dígitos..')
-    #                 self.fecha.delete(10, 'end')
-
-    def borraFecha(self, event):
-        ''' Si se borra la fecha elimina el backslash junto con el número anterior'''
+    def borra_fecha(self, event):
+        ''' Si se borra la fecha elimina el backslash junto con el número anterior
+        Args:
+            event (tkinter.Event): El evento que recibe el entry'''
         if event.char:
             if self.fecha.get()[(len(self.fecha.get())-1)] == "/":
                 self.fecha.delete((len(self.fecha.get())-1), 'end')
     
     def es_fecha_valida(self):
+        """ Revisa que la fecha exista y este entre los año 1000 hasta 2030
+
+        Returns:
+            Boolean : Retorna True si la fecha es válida y False si la fecha no existe
+        """
         try:
             date_str = self.fecha.get()
             dia, mes, año = map(int, date_str.split('/'))
@@ -432,12 +441,10 @@ class Inventario:
         except ValueError:
             fechaValida = False
         finally:
-            return fechaValida
-            
-            
+            return fechaValida   
     
-    '''.................................No se....................................'''
-    def limpiaCampos(self):
+    '''.................................Botones....................................'''
+    def limpia_campos(self):
         ''' Limpia todos los campos de captura'''
         self.idNit.delete(0, 'end')
         self.razonSocial.delete(0, 'end')
@@ -448,46 +455,75 @@ class Inventario:
         self.cantidad.delete(0, 'end')
         self.precio.delete(0, 'end')
         self.fecha.delete(0, 'end')
-    '''.................................Botones....................................'''
-    #Buscar
-    def lee_treeProductos(self):
+
+    def lee_treeProductos(self, top_producto = ''):
+        if top_producto=='' and self.codigo.get() != '':
+            top_producto = self.codigo.get()
         ''' Carga los datos y Limpia la Tabla tablaTreeView '''
         tabla_TreeView = self.treeProductos.get_children()
 
         for linea in tabla_TreeView:
             self.treeProductos.delete(linea)  # Límpia la filas del TreeView
+            
+        #Obtener el producto asociado al top_producto
+        db_top_product = self.run_query("""
+            SELECT * FROM Proveedor pv 
+            INNER JOIN Productos pd ON pv.idNitProv = pd.idNit 
+            WHERE pv.idNitProv = ? AND pd.Codigo = ?
+            """, (self.idNit.get(),top_producto))
 
-        # Seleccionando los datos de la BD
-        db_rows = self.run_Query("""SELECT * FROM Proveedor pv INNER JOIN Productos pd ON pv.idNitProv= pd.idNit WHERE pv.idNitProv = ?""",(self.idNit.get(),))  #WHERE pv.idNitProv = 'hola';,(self.idNit.get(),)) db_rows contine la vista del query
-
-        # # Insertando los datos de la BD en treeProductos de la pantalla
+        # Obtener el resto de los productos excluyendo el top_producto
+        db_rows = self.run_query("""
+            SELECT * FROM Proveedor pv 
+            INNER JOIN Productos pd ON pv.idNitProv = pd.idNit 
+            WHERE pv.idNitProv = ? AND pd.Codigo != ?
+            """, (self.idNit.get(),top_producto))
+    
+        for row in db_top_product:
+            self.treeProductos.insert('', 1, text=row[0], values=[
+                                      row[4], row[5], row[6], row[7], row[8], row[9]])
         for row in db_rows:
-            self.treeProductos.insert('', 0, text=row[0], values=[
-                                      str(row[4]), row[5], row[6], row[7], row[8], row[9]])
+            self.treeProductos.insert('', 1, text=row[0], values=[
+                                      row[4], row[5], row[6], row[7], row[8], row[9]])
+    
+    
+    #Buscar
+    def buscar_prov(self):
+        if self.idNit.get() != '':
+            self.existe_prov = self.run_query(f"""SELECT * from Proveedor WHERE idNitProv= ?;""",(self.idNit.get(),)).fetchall() 
+            self.existen_prod = self.run_query(f"""SELECT * from Productos WHERE idNit= ?;""",(self.idNit.get(),)).fetchone() 
+            if self.existe_prov:
+                self.lee_treeProductos()
+                self.limpia_campos()
+                self.idNit.insert(0,self.existe_prov[0][0])
+                self.razonSocial.insert(0,self.existe_prov[0][1])
+                self.ciudad.insert(0,self.existe_prov[0][2])
+                
+            else:
+                mssg.showinfo(title='Buscar', message=f'El provedor no existe en la base de datos', icon='info')
+       
     # Grabar
-    def guardar_proveedor(self):
-        # try except IntegrityError: UNIQUE constraint failed: Productos.idNit, Productos.Codigo
-        self.run_Query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
+    def guardar_proveedor(self):    
+        self.run_query(f""" INSERT INTO Proveedor (idNitProv,Razon_Social, Ciudad)
                     VALUES(?,?,?);""", (self.idNit.get(), self.razonSocial.get(), self.ciudad.get()))
         
     def guardar_productos(self):
-        self.run_Query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
+        self.run_query(f""" INSERT INTO Productos (idNit, Codigo, Descripcion, Und, Cantidad, Precio, Fecha)
                     VALUES(?,?,?,?,?,?,?);""", (self.idNit.get(), self.codigo.get(), self.descripcion.get(), self.unidad.get(), self.cantidad.get(), self.precio.get(), self.fecha.get()))
 
     def actualiza_productos(self):
         #contemplar que todo sea igual
-        self.run_Query(f"""UPDATE Productos 
+        self.run_query(f"""UPDATE Productos 
                        SET Descripcion= ?, Und= ?, Cantidad = ?, Precio = ?, Fecha = ? 
                        WHERE idNit = ? AND Codigo=? """,(self.descripcion.get(),self.unidad.get(),self.cantidad.get(),self.precio.get(),self.fecha.get(),self.idNit.get(), self.codigo.get()))
         
     def actualiza_proveedor(self):
-        self.run_Query(f"""UPDATE Proveedor SET Razon_Social = ?, Ciudad = ? WHERE idNitProv = ?""", (self.razonSocial.get(), self.ciudad.get(),self.idNit.get()))
+        self.run_query(f"""UPDATE Proveedor SET Razon_Social = ?, Ciudad = ? WHERE idNitProv = ?""", (self.razonSocial.get(), self.ciudad.get(),self.idNit.get()))
 
     def pregunta(self, texto , titulo='Grabación'):
         self.preguntar = mssg.askquestion(f'{titulo}',f'{texto}')
         self.respuesta = True if self.preguntar == 'yes' else False
         return self.respuesta
-
     
     def graba_Registro(self):
         '''Adiciona un producto a la BD si la validación es True'''        
@@ -499,7 +535,7 @@ class Inventario:
                 mssg.showerror('Atención!!', f'Id/Nit y código deben contener información si desea grabar')
                 
         else:
-            self.sameIdProv = (self.run_Query(f"""SELECT * from Proveedor WHERE idNitProv= ?;""",(self.idNit.get(),))).fetchall() 
+            self.sameIdProv = (self.run_query(f"""SELECT * from Proveedor WHERE idNitProv= ?;""",(self.idNit.get(),))).fetchall() 
             self.mensaje = ''
             self.accion = ''
             if self.sameIdProv:    
@@ -518,31 +554,40 @@ class Inventario:
                         if self.pregunta('¿Desea actualizar el proveedor?'):
                             self.actualiza_proveedor()
                             mssg.showinfo(title='Grabación exitosa', message=f' {self.mensaje}', icon='info')
-                            self.limpiaCampos()
+                            self.lee_treeProductos()
+                            self.limpia_campos()
                     elif self.accion == 'guardar':
                         if self.pregunta('¿Desea guardar el proveedor?'):
                             self.guardar_proveedor()
                             mssg.showinfo(title='Grabación exitosa', message=f' {self.mensaje}', icon='info')  
-                            self.limpiaCampos()                 
+                            self.lee_treeProductos()             
+                            self.limpia_campos()   
+                             
                 else:   
                     mssg.showinfo(title='Grabación no requerida', message=f'Los datos del proveedor ya existen en la base de datos', icon='info')  
+                    self.lee_treeProductos()
             else:             
                 if self.fecha.get() == '':
                     mssg.showerror( 'Atención!!', f'.. la fecha no puede estar vacía si desea grabar')
                 else:
                     if self.es_fecha_valida():
-                        self.sameId = (self.run_Query(f"""SELECT * from Productos WHERE idNit= ? AND Codigo= ?;""",(str(self.idNit.get()),str(self.codigo.get())))).fetchall()
-                        if self.sameId:
-                            if str(self.descripcion.get()) == str(self.sameId[0][2])  and str(self.unidad.get()) == str(self.sameId[0][3]) and float(self.cantidad.get()) == float(self.sameId[0][4]) and float(self.precio.get()) == float(self.sameId[0][5]) and str(self.fecha.get())==str(self.sameId[0][6]):
+                        precioG = float(self.precio.get()) if self.precio.get()!= '' else self.precio.get()
+                        cantidadG = float(self.cantidad.get()) if self.cantidad.get()!='' else self.cantidad.get()
+                        # print(float(self.cantidad.get())== self.sameId[0][4])
+                        self.sameId = (self.run_query(f"""SELECT * from Productos WHERE idNit= ? AND Codigo= ?;""",(str(self.idNit.get()),str(self.codigo.get())))).fetchall()
+                        if self.sameId:      
+                            if str(self.descripcion.get()) == str(self.sameId[0][2])  and str(self.unidad.get()) == str(self.sameId[0][3]) and cantidadG == self.sameId[0][4] and precioG == self.sameId[0][5] and str(self.fecha.get())==str(self.sameId[0][6]):
                                 if self.mensaje:
                                     if self.accion == 'actualizar':
                                         if self.pregunta('¿Desea actualizar el proveedor y conservar el producto?'):
                                             self.actualiza_proveedor()
                                             mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nLos datos del producto han sido previamente grabados', icon='info')
-                                            self.limpiaCampos()
+                                            self.lee_treeProductos(self.codigo.get())             
+                                            self.limpia_campos()  
                                 
                                 else:
                                     mssg.showinfo(title='Grabación no requerida', message=f'Los datos ingresados han sido previamente grabados', icon='info')
+                                    self.lee_treeProductos()
                             else:
                                 if self.mensaje:
                                     if self.accion == 'actualizar':
@@ -550,12 +595,14 @@ class Inventario:
                                             self.actualiza_proveedor()
                                             self.actualiza_productos()           
                                             mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nEl producto ha sido actualizado', icon='info')
-                                            self.limpiaCampos()
+                                            self.lee_treeProductos(self.codigo.get())             
+                                            self.limpia_campos()  
                                 else:
                                     if self.pregunta('¿Desea actualizar el producto y conservar el proveedor?'):
                                         self.actualiza_productos()
                                         mssg.showinfo(title='Grabación exitosa', message=f'El producto ha sido actualizado', icon='info')
-                                        self.limpiaCampos()
+                                        self.lee_treeProductos(self.codigo.get())             
+                                        self.limpia_campos()  
                             
                         else:
                             if self.mensaje:
@@ -564,34 +611,34 @@ class Inventario:
                                         self.actualiza_proveedor()
                                         self.guardar_productos()
                                         mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nEl producto ha sido guardado', icon='info')  
-                                        self.limpiaCampos()     
+                                        self.lee_treeProductos(self.codigo.get())             
+                                        self.limpia_campos()  
                                 
                                 elif self.accion == 'guardar':
                                     if self.pregunta('¿Desea guardar el proveedor y el producto?'):
                                         self.guardar_proveedor()
                                         self.guardar_productos()
                                         mssg.showinfo(title='Grabación exitosa', message=f'{self.mensaje}\nEl producto ha sido guardado', icon='info')     
-                                        self.limpiaCampos()  
-                            
-                            
+                                        self.lee_treeProductos(self.codigo.get())             
+                                        self.limpia_campos()   
                             else:
                                 if self.pregunta('¿Desea guardar el producto y conservar el proveedor?'):
                                     self.guardar_productos()
                                     mssg.showinfo(title='Grabación exitosa', message=f'El producto ha sido guardado', icon='info')
-                                    self.limpiaCampos()
+                                    self.lee_treeProductos(self.codigo.get())             
+                                    self.limpia_campos()  
                     else:
                         mssg.showerror("Validación", "Fecha no válida")
     #Editar
     def tree_seleccion(self, event=None):
         item_seleccionado = self.treeProductos.focus()
-        fila = self.treeProductos.item(item_seleccionado)
-        val = fila.get('values')
-        # pv.Razon_Social,pv.Ciudad
-        if fila:
-            valProv = self.run_Query(
-                f"""SELECT * FROM Proveedor pv INNER JOIN Productos pd ON pv.idNitProv= pd.idNit WHERE pv.idNitProv = ? AND pd.Codigo= ?;""",(fila.get('text'),val[0]))
+        fila = self.treeProductos.item(item_seleccionado,'text')
+        val = self.treeProductos.item(item_seleccionado,'values')
+        if item_seleccionado:
+            valProv = self.run_query(
+                f"""SELECT * FROM Proveedor pv INNER JOIN Productos pd ON pv.idNitProv= pd.idNit WHERE pv.idNitProv = ? AND pd.Codigo= ?;""",(fila,val[0]))
             for row in valProv:
-                self.limpiaCampos()
+                self.limpia_campos()
                 self.idNit.insert(0, row[0])
                 self.razonSocial.insert(0, row[1])
                 self.ciudad.insert(0, row[2])
@@ -602,20 +649,33 @@ class Inventario:
                 self.precio.insert(0, row[8])
                 self.fecha.insert(0, row[9])
             
-    # Borrar
-    def eliminaRegistro(self, event=None):
+    def deshabilitar_botones(self):
+        self.btnBuscar.config(state='disabled')
+        self.btnGrabar.config(state='disabled')
+        self.btnEditar.config(state='disabled')
+        self.btnEliminar.config(state='disabled')
 
-        self.ventana1 = tk.Tk()
-        self.seleccion = tk.IntVar(self.ventana1, 2)
+    def habilitar_botones(self):
+        self.btnBuscar.config(state='normal')
+        self.btnGrabar.config(state='normal')
+        self.btnEditar.config(state='normal')
+        self.btnEliminar.config(state='normal')
+    
+    # Borrar
+    def elimina_registro(self, event=None):
+        self.deshabilitar_botones()
+        self.ventana1 = tk.Toplevel(self.win)
+        self.ventana1.title("Eliminación")
+        self.seleccion = tk.IntVar(self.ventana1)
         ancho_ventana = 300 # Ancho en píxeles
         alto_ventana = 300 # Alto en píxeles
         self.ventana1.geometry(f"{ancho_ventana}x{alto_ventana}")
 
-        self.radio1 = tk.Radiobutton(self.ventana1, text="Eliminar proveedor", variable=self.seleccion, value=1 ,anchor='w')
+        self.radio1 = tk.Radiobutton(self.ventana1, text="Eliminar proveedor", variable=self.seleccion, value=1)
         self.radio1.grid(column=1, row=0)
-        self.radio2 = tk.Radiobutton(self.ventana1, text="Eliminar los productos del proveedor", variable=self.seleccion, value=2 ,anchor='w')
+        self.radio2 = tk.Radiobutton(self.ventana1, text="Eliminar los productos del proveedor", variable=self.seleccion, value=2)
         self.radio2.grid(column=1, row=1)
-        self.radio2 = tk.Radiobutton(self.ventana1, text="Eliminar el producto especificado", variable=self.seleccion, value=3 ,anchor='w')
+        self.radio2 = tk.Radiobutton(self.ventana1, text="Eliminar el producto especificado", variable=self.seleccion, value=3)
         self.radio2.grid(column=1, row=2)
         
         self.botonEliminar1 = tk.Button(self.ventana1, text="Eliminar", command=self.borrar)
@@ -624,11 +684,12 @@ class Inventario:
         self.lblId = ttk.Label(self.ventana1)
         self.lblId.configure(text='Id/Nit', width=6, anchor = 'e')
         self.lblId.grid(column = 0, row = 5)
+        
         self.entryid = tk.Entry(self.ventana1)
         self.entryid.grid(column=1, row=5)
         self.entryid.configure(width= 15)
         self.entryid.insert(0, self.idNit.get())
-        self.entryid.bind("<KeyRelease>", self.validaIdNit)
+        self.entryid.bind("<KeyRelease>", self.valida_idNit)
         
         self.lblcod = ttk.Label(self.ventana1)
         self.lblcod.configure(text='Código', width=8, anchor = 'e')
@@ -638,58 +699,69 @@ class Inventario:
         self.entrycod.grid(column=1, row=6)
         self.entrycod.configure(width= 15)
         self.entrycod.insert(0, self.codigo.get())
+        
+        def on_close():
+            self.habilitar_botones()
+            self.ventana1.withdraw()
 
+        self.ventana1.protocol("WM_DELETE_WINDOW", on_close)
+        self.ventana1.wait_window()
+        
     def borrar(self):
         id_nit = self.entryid.get()
         cod = self.entrycod.get()
-        self.existe_prov = self.run_Query("""SELECT * FROM Proveedor WHERE idNitProv = ?""",(id_nit,)).fetchall()
-        self.existe_prod = self.run_Query("SELECT * from Productos WHERE idNit= ? AND Codigo= ?;",(id_nit,cod)).fetchall()
-        
+        self.existe_prov = self.run_query("""SELECT * FROM Proveedor WHERE idNitProv = ?""", (id_nit,)).fetchall()
+        self.existen_prod = self.run_query(f"""SELECT * from Productos WHERE idNit= ?;""",(id_nit,)).fetchone()
+        self.existe_prod = self.run_query("SELECT * from Productos WHERE idNit= ? AND Codigo= ?;", (id_nit, cod)).fetchall()
         if id_nit == '':
             mssg.showerror('Error', 'Debes ingresar un Id/Nit de proveedor para eliminar.')
         else:
-            if self.seleccion.get() == 1:
-                if self.existe_prov:
-                    if self.pregunta('¿Estás seguro de eliminar el proveedor y sus productos?', 'Confirmar acción'):
-                        self.run_Query("DELETE FROM Proveedor WHERE idNitProv = ?", (id_nit,))
-                        self.run_Query("DELETE FROM Productos WHERE idNit = ?", (id_nit,))
+            if self.seleccion.get() == 1:                    
+                if self.pregunta('¿Estás seguro de eliminar el proveedor y sus productos?', 'Confirmar acción'):
+                    if self.existe_prov:
+                        self.run_query("DELETE FROM Proveedor WHERE idNitProv = ?", (id_nit,))
+                        self.run_query("DELETE FROM Productos WHERE idNit = ?", (id_nit,))
                         mssg.showinfo('Éxito', 'El proveedor y sus productos se han eliminado con éxito.')
-                        self.ventana1.quit()
-                        self.limpiaCampos()
-                else:
-                    mssg.showinfo('Eliminar', 'El proveedor no existe en la base de datos.')
-                    self.ventana1.quit()
+                        self.ventana1.withdraw()  # Withdraw the window
+                        self.limpia_campos()
+                        self.habilitar_botones()
+                    else:
+                        mssg.showinfo('Eliminar', 'No existe el proveedor en la base de datos')
+                self.ventana1.withdraw()  # Withdraw the window
+                self.limpia_campos()
+                self.habilitar_botones()
             elif self.seleccion.get() == 2:
-                if self.existe_prov:
-                    if self.pregunta('¿Estás seguro de eliminar los productos del proveedor?', 'Confirmar acción'):
-                        self.run_Query("DELETE FROM Productos WHERE idNit = ? ", (id_nit,))
-                        mssg.showinfo('Éxito', 'Los productos del proveedor se han eliminado con éxito.')
-                        self.ventana1.quit()
-                        self.limpiaCampos()
-                else:
-                    mssg.showinfo('Eliminar', 'El proveedor no existe en la base de datos.')
-                    self.ventana1.quit()
+                if self.pregunta('¿Estás seguro de eliminar los productos del proveedor?', 'Confirmar acción'):
+                    if self.existe_prov:
+                        if self.existen_prod:   
+                            self.run_query("DELETE FROM Productos WHERE idNit = ? ", (id_nit,))
+                            mssg.showinfo('Éxito', 'Los productos del proveedor se han eliminado con éxito.')
+                        else: 
+                            mssg.showinfo('Eliminar', 'El proveedor no tiene productos')   
+                    else:
+                        mssg.showinfo('Eliminar', 'No existe el proveedor en la base de datos')
+                    
+                self.ventana1.withdraw()  # Withdraw the window
+                self.limpia_campos()
+                self.habilitar_botones()
+                
             elif self.seleccion.get() == 3:
                 if cod == '':
                     mssg.showerror('Error', 'Debes ingresar un código para eliminar.')
                 else:
-                    if self.existe_prov:
-                        if self.existe_prod:
-                            if self.pregunta('¿Estás seguro de eliminar este producto?', 'Confirmar acción'):
-                                self.run_Query("DELETE FROM Productos WHERE idNit = ? AND Codigo = ?", (id_nit,cod))
+                    if self.pregunta('¿Estás seguro de eliminar este producto del proveedor?', 'Confirmar acción'):
+                        if self.existen_prod:
+                            if self.existe_prod:
+                                self.run_query("DELETE FROM Productos WHERE idNit = ? AND Codigo = ?", (id_nit, cod))
                                 mssg.showinfo('Éxito', 'El producto se ha eliminado con éxito.')
-                                self.ventana1.quit()
-                                self.limpiaCampos()
+                            else:
+                                mssg.showinfo('Eliminar', 'El producto no existe.')
                         else:
-                            mssg.showinfo('Eliminar', 'El código de el producto no existe en la base de datos.')
-                            self.ventana1.quit()
-                    else:
-                        mssg.showinfo('Eliminar', 'El proveedor no existe en la base de datos.')
-                        self.ventana1.quit()
-                        
-                
-            
-
+                            mssg.showinfo('Eliminar', 'El proveedor no tiene productos')
+                    self.ventana1.withdraw()  # Withdraw the window
+                    self.limpia_campos()
+                    self.habilitar_botones()
+   
 if __name__ == "__main__":
     app = Inventario()
     app.run()

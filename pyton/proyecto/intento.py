@@ -13,7 +13,7 @@ class Inventario:
         self.win = tk.Tk()
         self.win.title("Manejo de Proveedores")
         self.win.iconbitmap(r"f2.ico")
-        self.db_name = 'Inventario.db'
+        self.db_name = 'Inventarioo.db'
         # self.win.resizable(False, False)
 
         # creación base de datos
@@ -457,7 +457,7 @@ class Inventario:
 
     def adiciona_Registro(self):
         '''Adiciona un producto a la BD si la validación es True'''
-        sameId = self.run_Query(f"""SELECT * from Productos pd WHERE pd.idNit= ?;""",(self.idNit.get()))
+        sameId = self.run_Query(f"""SELECT * from Productos pd WHERE pd.idNit= ?;""",(self.idNit.get(),))
         for row in sameId:
             if row[1] == self.codigo.get():
                 print(row[1])
